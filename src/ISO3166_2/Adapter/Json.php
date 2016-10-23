@@ -1,8 +1,6 @@
 <?php
 /**
- * ISO 3166-1
- *
- * ISO 3166-1 country codes
+ * ISO 3166-2
  *
  * Copyright © 2016 Juan Pedro Gonzalez Gutierrez
  *
@@ -69,10 +67,28 @@ class Json extends AbstractAdapter implements AdapterInterface
         // create the results array
         $results = array();
         
-        foreach ($this->data as $current) {
-            if (strcasecmp($current->parent, $parent) === 0) {
-                $results[] = $current;
+        $parent = strtoupper($parent);
+        if (preg_match('/^([A-Z]{2})-([A-Z0-9]+)$/', $parent, $matches)) {
+            $code   = $matches[1];
+            $parent = $matches[2];
+        
+            foreach ($this->data as $current) {
+                if (strcasecmp($current->parent, $parent) === 0) {
+                    if (preg_match('/^' . $code . '-([A-Z0-9]+)$/', $current->code)) {
+                        $results[] = $current;
+                    }
+                }
             }
+        } elseif (preg_match('/^([A-Z]{2})$/', $parent)) {
+            foreach ($this->data as $current) {
+                if (empty($current->parent)) {
+                    if (preg_match('/^' . $parent . '-([A-Z0-9]+)$/', $current->code)) {
+                        $results[] = $current;
+                    }
+                }
+            }
+        } else {
+            throw new Exception\InvalidArgumentException('invalid parent code.');
         }
         
         return $results;
@@ -91,7 +107,7 @@ class Json extends AbstractAdapter implements AdapterInterface
             $this->loadFile();
         }
         
-        return isset(strtoupper($this->data['code']));
+        return isset($this->data[strtoupper($code)]);
     }
     
     /**

@@ -311,7 +311,7 @@ class ISO3166_3 implements ISO3166_3Interface
             throw new Exception\InvalidArgumentException('name is a required property an can not be empty.');
         }
 
-        if (!preg_match('/^[0-9]{3}$/', $input['numeric'])) {
+        if ((!empty($input['numeric']) && (!preg_match('/^[0-9]{3}$/', $input['numeric'])))) {
             throw new Exception\InvalidArgumentException('numeric has an invalid value.');
         }
 

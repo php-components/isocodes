@@ -1,8 +1,6 @@
 <?php
 /**
- * ISO 3166-1
- *
- * ISO 3166-1 country codes
+ * ISO 3166-3
  *
  * Copyright © 2016 Juan Pedro Gonzalez Gutierrez
  *
@@ -77,7 +75,7 @@ class Json extends AbstractAdapter implements AdapterInterface
     /**
      * Get all the objects.
      * 
-     * @return ISO3166_3Interface[];
+     * @return ISO3166_3Interface[]
      */
     public function getAll()
     {

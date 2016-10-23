@@ -277,11 +277,11 @@ class ISO639_2 implements ISO639_2Interface
             throw new Exception\InvalidArgumentException('name is a required property an can not be empty.');
         }
 
-        if (!preg_match('/^[a-z]{2}$/', $input['alpha_2'])) {
+        if ((!empty($input['alpha_2'])) && (!preg_match('/^[a-z]{2}$/', $input['alpha_2']))) {
             throw new Exception\InvalidArgumentException('alpha_2 has an invalid value.');
         }
 
-        if (!preg_match('/^[a-z]{3}$/', $input['bibliographic'])) {
+        if ((!empty($input['bibliographic'])) && (!preg_match('/^[a-z]{3}$/', $input['bibliographic']))) {
             throw new Exception\InvalidArgumentException('bibliographic has an invalid value.');
         }
 

@@ -39,7 +39,7 @@ interface AdapterInterface extends BaseAdapterInterface
      * 
      * @return ISO639_5Interface[]
      */
-    public function getAll($scope = null, $type = null);
+    public function getAll();
     
     /**
      * Check if an object with the given code exists.

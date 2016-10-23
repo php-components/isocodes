@@ -60,7 +60,7 @@ class Json extends AbstractAdapter implements AdapterInterface
      * 
      * @return ISO639_5Interface[]
      */
-    public function getAll($scope = null, $type = null)
+    public function getAll()
     {
         if (null === $this->data) {
             $this->loadFile();

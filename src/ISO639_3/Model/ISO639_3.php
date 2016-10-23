@@ -369,11 +369,11 @@ class ISO639_3 implements ISO639_3Interface
             throw new Exception\InvalidArgumentException('type has an invalid value.');
         }
 
-        if (!preg_match('/^[a-z]{2}$/', $input['alpha_2'])) {
+        if ((!empty($input['alpha_2'])) && (!preg_match('/^[a-z]{2}$/', $input['alpha_2']))) {
             throw new Exception\InvalidArgumentException('alpha_2 has an invalid value.');
         }
 
-        if (!preg_match('/^[a-z]{3}$/', $input['bibliographic'])) {
+        if ((!empty($input['bibliographic'])) && (!preg_match('/^[a-z]{3}$/', $input['bibliographic']))) {
             throw new Exception\InvalidArgumentException('bibliographic has an invalid value.');
         }
 
