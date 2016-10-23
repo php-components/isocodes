@@ -1,0 +1,14 @@
+{
+    "name": "php-components/isocodes",
+    "description": "PHP implementation of ISO codes package",
+    "type": "library",
+    "license": "GPLv3",
+    "require": {
+        "php": "^5.4 || ^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ISOCodes\\": "vendor/php-components/isocodes/src/"
+        }
+    }
+}
