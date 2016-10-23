@@ -131,7 +131,7 @@ class Json extends AbstractAdapter implements AdapterInterface
      */
     protected function loadFile()
     {
-        $filename = dirname(dirname(dirname(__DIR__))) . '/data/iso_3166-3.json';
+        $filename = dirname(dirname(dirname(__DIR__))) . '/data/json/iso_3166-3.json';
         
         if (!(file_exists($filename) && is_readable($filename))) {
             throw new Exception\FileNotFoundException(sprintf('%s not found or not readable.', $filename));

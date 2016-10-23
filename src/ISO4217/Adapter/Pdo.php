@@ -25,8 +25,136 @@ use ISOCodes\Exception;
 use ISOCodes\ISO4217\Model\ISO4217Interface;
 use ISOCodes\ISO4217\Model\ISO4217;
 
-class Json extends AbstractAdapter implements AdapterInterface
+class Pdo extends AbstractAdapter implements AdapterInterface
 {
+    /**
+     * @var \PDO
+     */
+    protected $pdo;
+    
+    /**
+     * Get an object by its code.
+     *
+     * @param string $code
+     * @return ISO4217Interface
+     * @throws Exception\InvalidArgumentException
+     */
+    public function get($code)
+    {
+        $prototype = $this->getObjectPrototype();
+    
+        $data = $this->fetchByCode($code);
+        if (!$data) {
+            return null;
+        }
+    
+        $obj = clone $prototype;
+        $obj->exchangeArray($data);
+        $obj->_translator = $this->getTranslator();
+    
+        return $obj;
+    }
+    
+    /**
+     * Get all the objects.
+     *
+     * @return ISO4217Interface[]
+     */
+    public function getAll()
+    {
+        $data      = array();
+        $pdo       = $this->getPdoConnection();
+        $prototype = $this->getObjectPrototype();
+    
+        $result = $this->pdo->query("SELECT * FROM iso_4217");
+    
+        foreach($result as $row) {
+            $obj = clone $prototype;
+            $obj->exchangeArray($row);
+            $obj->_translator = $this->getTranslator();
+    
+            $data[] = $obj;
+        }
+    
+        return $data;
+    }
+    
+    /**
+     * Check if an object with the given code exists.
+     *
+     * @param string|int $code
+     * @return bool
+     * @throws Exception\InvalidArgumentException
+     */
+    public function has($code)
+    {
+        $data = $this->fetchByCode($code);
+        if (!$data) {
+            return false;
+        }
+    
+        return true;
+    }
+    
+    /**
+     *
+     * @param unknown $code
+     * @throws Exception\InvalidArgumentException
+     * @return mixed
+     */
+    protected function fetchByCode($code)
+    {
+        $where     = '';
+        $params    = array();
+        $pdo       = $this->getPdoConnection();
+    
+        // Detect code
+        if (is_numeric($code)) {
+            $code = str_pad($code, 3, '0', STR_PAD_LEFT);
+            if (strlen($code) !== 3) {
+                throw new Exception\InvalidArgumentException('code must be a valid alpha-3 or numeric code.');
+            }
+        
+            $where              .= 'numeric = :numeric';
+            $params[':numeric']  = $code;
+        } elseif (preg_match('/^[a-zA-Z]{3}$/', $code)) {
+            $where              .= 'alpha_3 = :alpha_3';
+            $params[':alpha_3']  = strtoupper($code);
+        } else {
+            throw new Exception\InvalidArgumentException('code must be a valid alpha-3 or numeric code.');
+        }
+    
+        $statement = $pdo->prepare('SELECT * FROM iso_4217 WHERE ' . $where);
+        $result    = $statement->execute($params);
+        if (!$result) {
+            return false;
+        }
+    
+        return $statement->fetch(\PDO::FETCH_ASSOC);
+    }
+    
+    protected function getPdoConnection()
+    {
+        if (!$this->pdo instanceof \PDO) {
+            if (file_exists(dirname(dirname(dirname(__DIR__))) . '/data/sqlite/isocodes.sqlite')) {
+                $this->pdo = new \PDO('sqlite:' . dirname(dirname(dirname(__DIR__))) . '/data/sqlite/isocodes.sqlite');
+            }
+        }
+    
+        return $this->pdo;
+    }
+    
+    protected function getObjectPrototype()
+    {
+        if (null === $this->modelPrototype) {
+            $this->modelPrototype = new ISO4217();
+        } elseif (!$this->modelPrototype instanceof ISO4217Interface) {
+            throw new Exception\RuntimeException(sprintf('The model prototype for %s must be an instance of %s', __CLASS__, ISO4217Interface::class));
+        }
+    
+        return $this->modelPrototype;
+    }
+    
     /**
      * @var array
      */

@@ -25,109 +25,125 @@ use ISOCodes\Exception;
 use ISOCodes\ISO639_5\Model\ISO639_5;
 use ISOCodes\ISO639_5\Model\ISO639_5Interface;
 
-class Json extends AbstractAdapter implements AdapterInterface
+class Pdo extends AbstractAdapter implements AdapterInterface
 {
     /**
-     * @var array
+     * @var \PDO
      */
-    protected $data;
+    protected $pdo;
     
     /**
      * Get an object by its code.
-     * 
+     *
      * @param string $code
      * @return ISO639_5Interface
      * @throws Exception\InvalidArgumentException
      */
     public function get($code)
     {
-        if (null === $this->data) {
-            $this->loadFile();
+        $prototype = $this->getObjectPrototype();
+    
+        $data = $this->fetchByCode($code);
+        if (!$data) {
+            return null;
         }
-        
-        // Detect code
-        if (preg_match('/^[a-zA-Z]{3}$/', $code)) {
-            return (isset($this->data[strtoupper($code)]) ? $this->data[strtoupper($code)] : null);
-        } else {
-            throw new Exception\InvalidArgumentException('code must be a valid alpha-3 code.');
-        }
-        
-        return null;
+    
+        $obj = clone $prototype;
+        $obj->exchangeArray($data);
+        $obj->_translator = $this->getTranslator();
+    
+        return $obj;
     }
     
     /**
      * Get all the objects.
-     * 
+     *
      * @return ISO639_5Interface[]
      */
     public function getAll()
     {
-        if (null === $this->data) {
-            $this->loadFile();
+        $data      = array();
+        $pdo       = $this->getPdoConnection();
+        $prototype = $this->getObjectPrototype();
+    
+        $result = $this->pdo->query("SELECT * FROM iso_639_5");
+    
+        foreach($result as $row) {
+            $obj = clone $prototype;
+            $obj->exchangeArray($row);
+            $obj->_translator = $this->getTranslator();
+    
+            $data[] = $obj;
         }
-        
-        return $this->data;
+    
+        return $data;
     }
     
     /**
      * Check if an object with the given code exists.
-     * 
+     *
      * @param string|int $code
      * @return bool
      * @throws Exception\InvalidArgumentException
      */
     public function has($code)
     {
-        if (null === $this->data) {
-            $this->loadFile();
+        $data = $this->fetchByCode($code);
+        if (!$data) {
+            return false;
         }
-        
-        // Detect code
-        if (preg_match('/^[a-zA-Z]{3}$/', $code)) {
-            return isset($this->data[strtoupper($code)]);
-        } else {
-            throw new Exception\InvalidArgumentException('code must be a valid alpha-3 code.');
-        }
-        
-        return false;
+    
+        return true;
     }
     
     /**
-     * Load the JSON file contents
+     *
+     * @param unknown $code
+     * @throws Exception\InvalidArgumentException
+     * @return mixed
      */
-    protected function loadFile()
+    protected function fetchByCode($code)
     {
-        $filename = dirname(dirname(dirname(__DIR__))) . '/data/json/iso_639-5.json';
-        
-        if (!(file_exists($filename) && is_readable($filename))) {
-            throw new Exception\FileNotFoundException(sprintf('%s not found or not readable.', $filename));
+        $where     = '';
+        $params    = array();
+        $pdo       = $this->getPdoConnection();
+    
+        // Detect code
+        if (preg_match('/^[a-zA-Z]{3}$/', $code)) {
+            $where              .= 'alpha_3 = :alpha_3';
+            $params[':alpha_3']  = strtolower($code);
+        } else {
+            throw new Exception\InvalidArgumentException('code must be a valid alpha-3 code.');
         }
-        
-        $data = json_decode(file_get_contents($filename), true);
-        if (!is_array($data)) {
-            throw new Exception\RuntimeException(sprintf('%s is not a valid JSON file.', $filename));
+    
+        $statement = $pdo->prepare('SELECT * FROM iso_639_5 WHERE ' . $where);
+        $result    = $statement->execute($params);
+        if (!$result) {
+            return false;
         }
-        
-        if (!array_key_exists('639-5' , $data)) {
-            throw new Exception\RuntimeException(sprintf('%s is not a valid JSON file for ISO-639-5.', $filename));
+    
+        return $statement->fetch(\PDO::FETCH_ASSOC);
+    }
+    
+    protected function getPdoConnection()
+    {
+        if (!$this->pdo instanceof \PDO) {
+            if (file_exists(dirname(dirname(dirname(__DIR__))) . '/data/sqlite/isocodes.sqlite')) {
+                $this->pdo = new \PDO('sqlite:' . dirname(dirname(dirname(__DIR__))) . '/data/sqlite/isocodes.sqlite');
+            }
         }
-        
-        $data = $data['639-5'];
-        
-        // Lazy load the protoype
+    
+        return $this->pdo;
+    }
+    
+    protected function getObjectPrototype()
+    {
         if (null === $this->modelPrototype) {
             $this->modelPrototype = new ISO639_5();
         } elseif (!$this->modelPrototype instanceof ISO639_5Interface) {
             throw new Exception\RuntimeException(sprintf('The model prototype for %s must be an instance of %s', __CLASS__, ISO639_5Interface::class));
         }
-        
-        // Setting objects and the primary key
-        foreach ($data as $current) {
-            $obj = clone $this->modelPrototype;
-            $obj->exchangeArray($current);
-            $obj->_translator = $this->getTranslator();
-            
-            $this->data[strtoupper($current['alpha_3'])] = $obj; 
-        }
+    
+        return $this->modelPrototype;
     }
 }
