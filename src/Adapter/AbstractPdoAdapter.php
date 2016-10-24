@@ -2,7 +2,7 @@
 /**
  * ISO Codes
  *
- * ISO Codes abstract adapter
+ * ISO Codes abstract PDO adapter.
  *
 * Copyright (c) 2016 Juan Pedro Gonzalez Gutierrez
  *
@@ -22,32 +22,30 @@
  */
 namespace ISOCodes\Adapter;
 
-use ISOCodes\I18n\Translator;
-use ISOCodes\I18n\TranslatorInterface;
-
-abstract class AbstractAdapter implements AdapterInterface
+abstract class AbstractPdoAdapter extends AbstractAdapter
 {
     /**
-     * @var TranslatorInterface
+     * @var \PDO
      */
-    protected $translator;
-    
+    protected $pdo;
+
     /**
-     * @var object
+     * Constructor.
+     * 
+     * @param Pdo $pdo The PDO object to use or null to use the internal sqlite database.
+     * @throws Exception\RuntimeException
      */
-    protected $modelPrototype;
-    
-    /**
-     * Get the translator.
-     *
-     * @return TranslatorInterface
-     */
-    public function getTranslator()
+    public function __construct(\PDO $pdo = null)
     {
-        if (!$this->translator instanceof TranslatorInterface) {
-            $this->translator = new Translator();
+        if ($pdo instanceof \PDO) {
+            $this->pdo = $pdo;
+        } else {
+            if (file_exists(dirname(dirname(__DIR__)) . '/data/sqlite/isocodes.sqlite')) {
+                $this->pdo = new \PDO('sqlite:' . dirname(dirname(__DIR__)) . '/data/sqlite/isocodes.sqlite');
+                $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            } else {
+                throw new Exception\RuntimeException('SQLite database not found.');
+            }
         }
-        
-        return $this->translator;
     }
 }

@@ -5,7 +5,7 @@
  * This code is a stripped down version of Zend Framewok loader.
  * 
  * Copyright © 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
- * Copyright © 2016 Juan Pedro Gonzalez Gutierrez
+* Copyright (c) 2016 Juan Pedro Gonzalez Gutierrez
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

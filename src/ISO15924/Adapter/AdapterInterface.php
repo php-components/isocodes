@@ -1,8 +1,10 @@
 <?php
 /**
  * ISO 15924
+ * 
+ * Codes for the representation of names of scripts
  *
- * Copyright © 2016 Juan Pedro Gonzalez Gutierrez
+* Copyright (c) 2016 Juan Pedro Gonzalez Gutierrez
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,7 +39,7 @@ interface AdapterInterface extends BaseAdapterInterface
     /**
      * Get all the objects.
      * 
-     * @return ISO15924Interface[];
+     * @return ISO15924Interface[]
      */
     public function getAll();
 

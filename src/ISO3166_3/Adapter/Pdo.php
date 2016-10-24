@@ -1,8 +1,10 @@
 <?php
 /**
  * ISO 3166-3
+ * 
+ * ISO 3166-3 formerly used country codes
  *
- * Copyright © 2016 Juan Pedro Gonzalez Gutierrez
+* Copyright (c) 2016 Juan Pedro Gonzalez Gutierrez
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,18 +22,13 @@
  */
 namespace ISOCodes\ISO3166_3\Adapter;
 
-use ISOCodes\Adapter\AbstractAdapter;
 use ISOCodes\Exception;
 use ISOCodes\ISO3166_3\Model\ISO3166_3;
 use ISOCodes\ISO3166_3\Model\ISO3166_3Interface;
+use ISOCodes\Adapter\AbstractPdoAdapter;
 
-class Pdo extends AbstractAdapter implements AdapterInterface
-{
-    /**
-     * @var \PDO
-     */
-    protected $pdo;
-    
+class Pdo extends AbstractPdoAdapter implements AdapterInterface
+{    
     /**
      * Get an object by its code.
      *
@@ -63,7 +60,6 @@ class Pdo extends AbstractAdapter implements AdapterInterface
     public function getAll()
     {
         $data      = array();
-        $pdo       = $this->getPdoConnection();
         $prototype = $this->getObjectPrototype();
     
         $result = $this->pdo->query("SELECT * FROM iso_3166_3");
@@ -106,7 +102,6 @@ class Pdo extends AbstractAdapter implements AdapterInterface
     {
         $where     = '';
         $params    = array();
-        $pdo       = $this->getPdoConnection();
     
         // Detect code
         if (is_numeric($code)) {
@@ -127,24 +122,13 @@ class Pdo extends AbstractAdapter implements AdapterInterface
             throw new Exception\InvalidArgumentException('code must be a valid alpha-3, alpha-4 or numeric code.');
         }
     
-        $statement = $pdo->prepare('SELECT * FROM iso_3166_3 WHERE ' . $where);
+        $statement = $this->pdo->prepare('SELECT * FROM iso_3166_3 WHERE ' . $where);
         $result    = $statement->execute($params);
         if (!$result) {
             return false;
         }
     
         return $statement->fetch(\PDO::FETCH_ASSOC);
-    }
-    
-    protected function getPdoConnection()
-    {
-        if (!$this->pdo instanceof \PDO) {
-            if (file_exists(dirname(dirname(dirname(__DIR__))) . '/data/sqlite/isocodes.sqlite')) {
-                $this->pdo = new \PDO('sqlite:' . dirname(dirname(dirname(__DIR__))) . '/data/sqlite/isocodes.sqlite');
-            }
-        }
-    
-        return $this->pdo;
     }
     
     protected function getObjectPrototype()

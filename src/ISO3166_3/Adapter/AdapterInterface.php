@@ -1,8 +1,10 @@
 <?php
 /**
  * ISO 3166-3
+ * 
+ * ISO 3166-3 formerly used country codes
  *
- * Copyright © 2016 Juan Pedro Gonzalez Gutierrez
+* Copyright (c) 2016 Juan Pedro Gonzalez Gutierrez
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,7 +38,7 @@ interface AdapterInterface extends BaseAdapterInterface
     /**
      * Get all the objects.
      * 
-     * @return ISO3166_3Interface[];
+     * @return ISO3166_3Interface[]
      */
     public function getAll();
 

@@ -1,8 +1,10 @@
 <?php
 /**
  * ISO 3166-2
+ * 
+ * ISO 3166-2 country and subdivision codes
  *
- * Copyright © 2016 Juan Pedro Gonzalez Gutierrez
+* Copyright (c) 2016 Juan Pedro Gonzalez Gutierrez
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,18 +22,13 @@
  */
 namespace ISOCodes\ISO3166_2\Adapter;
 
-use ISOCodes\Adapter\AbstractAdapter;
 use ISOCodes\Exception;
 use ISOCodes\ISO3166_2\Model\ISO3166_2Interface;
 use ISOCodes\ISO3166_2\Model\ISO3166_2;
+use ISOCodes\Adapter\AbstractPdoAdapter;
 
-class Pdo extends AbstractAdapter implements AdapterInterface
+class Pdo extends AbstractPdoAdapter implements AdapterInterface
 {
-    /**
-     * @var \PDO
-     */
-    protected $pdo;
-    
     /**
      * Get an object by its code.
      *
@@ -42,10 +39,9 @@ class Pdo extends AbstractAdapter implements AdapterInterface
     public function get($code)
     {
         $params    = array();
-        $pdo       = $this->getPdoConnection();
         $prototype = $this->getObjectPrototype();
     
-        $statement = $pdo->prepare('SELECT * FROM iso_3166_2 WHERE code = :code');
+        $statement = $this->pdo->prepare('SELECT * FROM iso_3166_2 WHERE code = :code');
         $result    = $statement->execute(array(':code' => $code));
         if (!$result) {
             return null;
@@ -67,12 +63,11 @@ class Pdo extends AbstractAdapter implements AdapterInterface
      * Get all the objects.
      * 
      * @param $parent The parent code so we can retrieve all the childs.
-     * @return ISO3166_2Interface[];
+     * @return ISO3166_2Interface[]
      */
     public function getAll($parent = null)
     {
         $data      = array();
-        $pdo       = $this->getPdoConnection();
         $prototype = $this->getObjectPrototype();
     
         if (empty($parent)) {
@@ -83,10 +78,10 @@ class Pdo extends AbstractAdapter implements AdapterInterface
                 $code   = $matches[1];
                 $parent = $matches[2];
                 
-                $statement = $pdo->prepare('SELECT * FROM iso_3166_2 WHERE (code LIKE :code) AND (parent = :parent);');
+                $statement = $this->pdo->prepare('SELECT * FROM iso_3166_2 WHERE (code LIKE :code) AND (parent = :parent);');
                 $result    = $statement->execute(array(':code' => $code . '-%', ':parent'=> $parent));
             } elseif (preg_match('/^([A-Z]{2})$/', $parent, $matches)) {
-                $statement = $pdo->prepare('SELECT * FROM iso_3166_2 WHERE (code LIKE :code) AND (parent IS NULL);');
+                $statement = $this->pdo->prepare('SELECT * FROM iso_3166_2 WHERE (code LIKE :code) AND (parent IS NULL);');
                 $result    = $statement->execute(array(':code' => $parent . '-%'));
             } else {
                 throw new Exception\InvalidArgumentException('invalid parent code.');
@@ -123,11 +118,10 @@ class Pdo extends AbstractAdapter implements AdapterInterface
      */
     public function has($code)
     {
-        $$params    = array();
-        $pdo       = $this->getPdoConnection();
+        $params    = array();
         $prototype = $this->getObjectPrototype();
     
-        $statement = $pdo->prepare('SELECT * FROM iso_3166_2 WHERE code = :code');
+        $statement = $this->pdo->prepare('SELECT * FROM iso_3166_2 WHERE code = :code');
         $result    = $statement->execute(array(':code' => $code));
         if (!$result) {
             return false;
@@ -151,7 +145,6 @@ class Pdo extends AbstractAdapter implements AdapterInterface
     {
         $where     = '';
         $params    = array();
-        $pdo       = $this->getPdoConnection();
     
         // Detect code
         if (is_numeric($code)) {
@@ -172,7 +165,7 @@ class Pdo extends AbstractAdapter implements AdapterInterface
             throw new Exception\InvalidArgumentException('code must be a valid alpha-2, alpha-3 or numeric code.');
         }
     
-        $statement = $pdo->prepare('SELECT * FROM iso_3166_2 WHERE ' . $where);
+        $statement = $this->pdo->prepare('SELECT * FROM iso_3166_2 WHERE ' . $where);
         $result    = $statement->execute($params);
         if (!$result) {
             return false;
@@ -181,23 +174,12 @@ class Pdo extends AbstractAdapter implements AdapterInterface
         return $statement->fetch(\PDO::FETCH_ASSOC);
     }
     
-    protected function getPdoConnection()
-    {
-        if (!$this->pdo instanceof \PDO) {
-            if (file_exists(dirname(dirname(dirname(__DIR__))) . '/data/sqlite/isocodes.sqlite')) {
-                $this->pdo = new \PDO('sqlite:' . dirname(dirname(dirname(__DIR__))) . '/data/sqlite/isocodes.sqlite');
-            }
-        }
-    
-        return $this->pdo;
-    }
-    
     protected function getObjectPrototype()
     {
         if (null === $this->modelPrototype) {
-            $this->modelPrototype = new ISO3166_2();
-        } elseif (!$this->modelPrototype instanceof ISO3166_2Interface) {
-            throw new Exception\RuntimeException(sprintf('The model prototype for %s must be an instance of %s', __CLASS__, ISO3166_2Interface::class));
+            $this->modelPrototype = new ISO3166_3();
+        } elseif (!$this->modelPrototype instanceof ISO3166_3Interface) {
+            throw new Exception\RuntimeException(sprintf('The model prototype for %s must be an instance of %s', __CLASS__, ISO3166_3Interface::class));
         }
     
         return $this->modelPrototype;

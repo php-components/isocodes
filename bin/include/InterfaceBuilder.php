@@ -32,7 +32,7 @@ class InterfaceBuilder
         $out .= " * \n";
         $out .= " * " . $this->schema->getDescription() . "\n";
         $out .= " * \n";
-        $out .= " * Copyright © 2016 Juan Pedro Gonzalez Gutierrez\n";
+        $out .= " * Copyright (c) 2016 Juan Pedro Gonzalez Gutierrez\n";
         $out .= " * \n";
         $out .= " * This program is free software; you can redistribute it and/or\n";
         $out .= " * modify it under the terms of the GNU Lesser General Public\n";

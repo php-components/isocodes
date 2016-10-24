@@ -1,8 +1,10 @@
 <?php
 /**
  * ISO 639-3
+ * 
+ * ISO 639-3 language codes
  *
- * Copyright © 2016 Juan Pedro Gonzalez Gutierrez
+* Copyright (c) 2016 Juan Pedro Gonzalez Gutierrez
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,18 +22,13 @@
  */
 namespace ISOCodes\ISO639_3\Adapter;
 
-use ISOCodes\Adapter\AbstractAdapter;
 use ISOCodes\Exception;
 use ISOCodes\ISO639_3\Model\ISO639_3;
 use ISOCodes\ISO639_3\Model\ISO639_3Interface;
+use ISOCodes\Adapter\AbstractPdoAdapter;
 
-class Pdo extends AbstractAdapter implements AdapterInterface
+class Pdo extends AbstractPdoAdapter implements AdapterInterface
 {
-    /**
-     * @var \PDO
-     */
-    protected $pdo;
-    
     /**
      * Get an object by its code.
      * 
@@ -65,7 +62,6 @@ class Pdo extends AbstractAdapter implements AdapterInterface
     public function getAll($scope = null, $type = null)
     {
         $data      = array();
-        $pdo       = $this->getPdoConnection();
         $prototype = $this->getObjectPrototype();
         
         if (empty($scope) && empty($type)) {
@@ -88,7 +84,7 @@ class Pdo extends AbstractAdapter implements AdapterInterface
                 $params[':type']  = $type;
             }
             
-            $statement = $pdo->prepare('SELECT * FROM iso_639_3 WHERE ' . $where);
+            $statement = $this->pdo->prepare('SELECT * FROM iso_639_3 WHERE ' . $where);
             $result    = $statement->execute($params);
             if (!$result) {
                 return array();
@@ -175,7 +171,6 @@ class Pdo extends AbstractAdapter implements AdapterInterface
     {
         $where     = '';
         $params    = array();
-        $pdo       = $this->getPdoConnection();
         
         // Detect code
         if (preg_match('/^[a-zA-Z]{2}$/', $code)) {
@@ -188,7 +183,7 @@ class Pdo extends AbstractAdapter implements AdapterInterface
             throw new Exception\InvalidArgumentException('code must be a valid alpha-2 or alpha-3 code.');
         }
     
-        $statement = $pdo->prepare('SELECT * FROM iso_639_3 WHERE ' . $where);
+        $statement = $this->pdo->prepare('SELECT * FROM iso_639_3 WHERE ' . $where);
         $result    = $statement->execute($params);
         if (!$result) {
             return false;
@@ -207,7 +202,6 @@ class Pdo extends AbstractAdapter implements AdapterInterface
     {
         $where     = '';
         $params    = array();
-        $pdo       = $this->getPdoConnection();
     
         // Detect code
         if (preg_match('/^[a-zA-Z]{3}$/', $code)) {
@@ -217,24 +211,13 @@ class Pdo extends AbstractAdapter implements AdapterInterface
             throw new Exception\InvalidArgumentException('bibliograhic code must be a 3 letter code.');
         }
     
-        $statement = $pdo->prepare('SELECT * FROM iso_639_3 WHERE ' . $where);
+        $statement = $this->pdo->prepare('SELECT * FROM iso_639_3 WHERE ' . $where);
         $result    = $statement->execute($params);
         if (!$result) {
             return false;
         }
     
         return $statement->fetch(\PDO::FETCH_ASSOC);
-    }
-    
-    protected function getPdoConnection()
-    {
-        if (!$this->pdo instanceof \PDO) {
-            if (file_exists(dirname(dirname(dirname(__DIR__))) . '/data/sqlite/isocodes.sqlite')) {
-                $this->pdo = new \PDO('sqlite:' . dirname(dirname(dirname(__DIR__))) . '/data/sqlite/isocodes.sqlite');
-            }
-        }
-    
-        return $this->pdo;
     }
     
     protected function getObjectPrototype()

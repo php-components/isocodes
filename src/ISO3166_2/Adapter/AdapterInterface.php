@@ -1,8 +1,10 @@
 <?php
 /**
  * ISO 3166-2
+ * 
+ * ISO 3166-2 country and subdivision codes
  *
- * Copyright © 2016 Juan Pedro Gonzalez Gutierrez
+* Copyright (c) 2016 Juan Pedro Gonzalez Gutierrez
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,7 +39,7 @@ interface AdapterInterface extends BaseAdapterInterface
      * Get all the objects.
      * 
      * @param $parent The parent code so we can retrieve all the childs.
-     * @return ISO3166_2Interface[];
+     * @return ISO3166_2Interface[]
      */
     public function getAll($parent = null);
 

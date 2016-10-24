@@ -4,7 +4,7 @@
  *
  * ISO 3166-1 country codes
  *
- * Copyright © 2016 Juan Pedro Gonzalez Gutierrez
+* Copyright (c) 2016 Juan Pedro Gonzalez Gutierrez
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -77,7 +77,7 @@ class Json extends AbstractAdapter implements AdapterInterface
     /**
      * Get all the objects.
      * 
-     * @return ISO3166_1Interface[];
+     * @return ISO3166_1Interface[]
      */
     public function getAll()
     {
