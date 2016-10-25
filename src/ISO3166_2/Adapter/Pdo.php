@@ -38,16 +38,9 @@ class Pdo extends AbstractPdoAdapter implements AdapterInterface
      */
     public function get($code)
     {
-        $params    = array();
         $prototype = $this->getObjectPrototype();
-    
-        $statement = $this->pdo->prepare('SELECT * FROM iso_3166_2 WHERE code = :code');
-        $result    = $statement->execute(array(':code' => $code));
-        if (!$result) {
-            return null;
-        }
-    
-        $data = $statement->fetch(\PDO::FETCH_ASSOC);
+        
+        $data = $this->fetchByCode($code);
         if (!$data) {
             return null;
         }
@@ -118,16 +111,7 @@ class Pdo extends AbstractPdoAdapter implements AdapterInterface
      */
     public function has($code)
     {
-        $params    = array();
-        $prototype = $this->getObjectPrototype();
-    
-        $statement = $this->pdo->prepare('SELECT * FROM iso_3166_2 WHERE code = :code');
-        $result    = $statement->execute(array(':code' => $code));
-        if (!$result) {
-            return false;
-        }
-    
-        $data = $statement->fetch(\PDO::FETCH_ASSOC);
+        $data = $this->fetchByCode($code);
         if (!$data) {
             return false;
         }
@@ -143,30 +127,9 @@ class Pdo extends AbstractPdoAdapter implements AdapterInterface
      */
     protected function fetchByCode($code)
     {
-        $where     = '';
-        $params    = array();
     
-        // Detect code
-        if (is_numeric($code)) {
-            $code = str_pad($code, 3, '0', STR_PAD_LEFT);
-            if (strlen($code) !== 3) {
-                throw new Exception\InvalidArgumentException('code must be a valid alpha-2, alpha-3 or numeric code.');
-            }
-    
-            $where              .= 'numeric = :numeric';
-            $params[':numeric']  = $code;
-        } elseif (preg_match('/^[a-zA-Z]{2}$/', $code)) {
-            $where              .= 'alpha_2 = :alpha_2';
-            $params[':alpha_2']  = strtoupper($code);
-        } elseif (preg_match('/^[a-zA-Z]{3}$/', $code)) {
-            $where              .= 'alpha_3 = :alpha_3';
-            $params[':alpha_3']  = strtoupper($code);
-        } else {
-            throw new Exception\InvalidArgumentException('code must be a valid alpha-2, alpha-3 or numeric code.');
-        }
-    
-        $statement = $this->pdo->prepare('SELECT * FROM iso_3166_2 WHERE ' . $where);
-        $result    = $statement->execute($params);
+        $statement = $this->pdo->prepare('SELECT * FROM iso_3166_2 WHERE code = :code');
+        $result    = $statement->execute([':code' => strtoupper($code)]);
         if (!$result) {
             return false;
         }
@@ -177,9 +140,9 @@ class Pdo extends AbstractPdoAdapter implements AdapterInterface
     protected function getObjectPrototype()
     {
         if (null === $this->modelPrototype) {
-            $this->modelPrototype = new ISO3166_3();
-        } elseif (!$this->modelPrototype instanceof ISO3166_3Interface) {
-            throw new Exception\RuntimeException(sprintf('The model prototype for %s must be an instance of %s', __CLASS__, ISO3166_3Interface::class));
+            $this->modelPrototype = new ISO3166_2();
+        } elseif (!$this->modelPrototype instanceof ISO3166_2Interface) {
+            throw new Exception\RuntimeException(sprintf('The model prototype for %s must be an instance of %s', __CLASS__, ISO3166_2Interface::class));
         }
     
         return $this->modelPrototype;

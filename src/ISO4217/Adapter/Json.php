@@ -55,7 +55,7 @@ class Json extends AbstractAdapter implements AdapterInterface
             }
         
             foreach ($this->data as $current) {
-                if (strcmp($current->numeric, $code)) {
+                if (strcmp($current->numeric, $code) === 0) {
                     return $current;
                 }
             }
@@ -103,7 +103,7 @@ class Json extends AbstractAdapter implements AdapterInterface
             }
             
             foreach ($this->data as $current) {
-                if (strcmp($current->numeric, $code)) {
+                if (strcmp($current->numeric, $code) === 0) {
                     return true;
                 }
             }

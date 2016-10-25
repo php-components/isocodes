@@ -50,7 +50,7 @@ class Json extends AbstractAdapter implements AdapterInterface
         // Detect code
         if (preg_match('/^[a-zA-Z]{2}$/', $code)) {
             foreach ($this->data as $current) {
-                if (strcasecmp($current->alpha2, $code)) {
+                if (strcasecmp($current->alpha2, $code) === 0) {
                     return $current;
                 }
             }
@@ -93,7 +93,7 @@ class Json extends AbstractAdapter implements AdapterInterface
         // Detect code
         if (preg_match('/^[a-zA-Z]{3}$/', $code)) {
             foreach ($this->data as $current) {
-                if (strcasecmp($current->bibliographic, $code)) {
+                if (strcasecmp($current->bibliographic, $code) === 0) {
                     return $current;
                 }
             }
@@ -120,7 +120,7 @@ class Json extends AbstractAdapter implements AdapterInterface
         // Detect code
         if (preg_match('/^[a-zA-Z]{2}$/', $code)) {
             foreach ($this->data as $current) {
-                if (strcasecmp($current->alpha2, $code)) {
+                if (strcasecmp($current->alpha2, $code) === 0) {
                     return true;
                 }
             }
@@ -149,7 +149,7 @@ class Json extends AbstractAdapter implements AdapterInterface
         // Detect code
         if (preg_match('/^[a-zA-Z]{3}$/', $code)) {
             foreach ($this->data as $current) {
-                if (strcasecmp($current->bibliographic, $code)) {
+                if (strcasecmp($current->bibliographic, $code) === 0) {
                     return true;
                 }
             }

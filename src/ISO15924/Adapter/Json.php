@@ -55,13 +55,13 @@ class Json extends AbstractAdapter implements AdapterInterface
             }
         
             foreach ($this->data as $current) {
-                if (strcmp($current->numeric, $code)) {
+                if (strcmp($current->numeric, $code) === 0) {
                     return $current;
                 }
             }
         } elseif (preg_match('/^[a-zA-Z]{4}$/', $code)) {
             foreach ($this->data as $current) {
-                if (strcasecmp($current->alpha4, $code)) {
+                if (strcasecmp($current->alpha4, $code) === 0) {
                     return $current;
                 }
             }
@@ -107,13 +107,13 @@ class Json extends AbstractAdapter implements AdapterInterface
             }
             
             foreach ($this->data as $current) {
-                if (strcmp($current->numeric, $code)) {
+                if (strcmp($current->numeric, $code) === 0) {
                     return true;
                 }
             }
         } elseif (preg_match('/^[a-zA-Z]{4}$/', $code)) {
             foreach ($this->data as $current) {
-                if (strcasecmp($current->alpha4, $code)) {
+                if (strcasecmp($current->alpha4, $code) === 0) {
                     return true;
                 }
             }

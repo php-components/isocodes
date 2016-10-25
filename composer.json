@@ -8,7 +8,7 @@
     },
     "autoload": {
         "psr-4": {
-            "ISOCodes\\": "vendor/php-components/isocodes/src/"
+            "ISOCodes\\": "src/"
         }
     }
 }

@@ -146,10 +146,10 @@ class Pdo extends AbstractPdoAdapter implements AdapterInterface
         // Detect code
         if (preg_match('/^[a-zA-Z]{2}$/', $code)) {
             $where              .= 'alpha_2 = :alpha_2';
-            $params[':alpha_2']  = strtoupper($code);
+            $params[':alpha_2']  = strtolower($code);
         } elseif (preg_match('/^[a-zA-Z]{3}$/', $code)) {
             $where              .= 'alpha_3 = :alpha_3';
-            $params[':alpha_3']  = strtoupper($code);
+            $params[':alpha_3']  = strtolower($code);
         } else {
             throw new Exception\InvalidArgumentException('code must be a valid alpha-2 or alpha-3 code.');
         }
@@ -177,7 +177,7 @@ class Pdo extends AbstractPdoAdapter implements AdapterInterface
         // Detect code
         if (preg_match('/^[a-zA-Z]{3}$/', $code)) {
             $where              .= 'bibliographic = :bibliographic';
-            $params[':bibliographic']  = strtoupper($code);
+            $params[':bibliographic']  = strtolower($code);
         } else {
             throw new Exception\InvalidArgumentException('bibliograhic code must be a 3 letter code.');
         }
