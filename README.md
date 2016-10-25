@@ -1,4 +1,6 @@
 # PHP ISO Codes
+[![Build Status](https://travis-ci.org/php-components/isocodes.svg?branch=master)](https://travis-ci.org/php-components/isocodes)
+
 PHP ISO codes based on the open source [iso-codes](https://pkg-isocodes.alioth.debian.org/) project.
 
 This project includes:
