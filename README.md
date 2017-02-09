@@ -17,15 +17,9 @@ This project includes:
 ...and the appropiate translations which are managed through the [Translation Project](https://www.translationproject.org/html/welcome.html).
 
 ## Installation
-The easiest and recommended way to install this library is through [composer](http://getcomposer.org/).
-
-Add the library to your composer requirements
+The easiest and recommended way to install this library is through [composer](http://getcomposer.org/):
 
     composer require php-components/isocodes
-
-Then tell composer to download any new requirement
-
-    composer update
 
 ## Adapters
 Adapters are used in order to load the ISO data. Currently we support the following adapters:
