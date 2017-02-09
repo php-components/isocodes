@@ -52,7 +52,7 @@ This adapter makes use of [iso-codes](https://pkg-isocodes.alioth.debian.org/) J
     
     if (null !== $country) {
         // Get the country name in Spanish ('es')
-        echo $c->getName('es');
+        echo $country->getName('es');
     } else {
         echo 'Country not found!';
     }
@@ -76,7 +76,7 @@ This adapter makes use of PDO to retrieve the ISO data from a database backend. 
     
     if (null !== $country) {
         // Get the country name in Spanish ('es')
-        echo $c->getName('es');
+        echo $country->getName('es');
     } else {
         echo 'Country not found!';
     }
