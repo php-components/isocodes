@@ -17,15 +17,9 @@ This project includes:
 ...and the appropiate translations which are managed through the [Translation Project](https://www.translationproject.org/html/welcome.html).
 
 ## Installation
-The easiest and recommended way to install this library is through [composer](http://getcomposer.org/).
-
-Add the library to your composer requirements
+The easiest and recommended way to install this library is through [composer](http://getcomposer.org/):
 
     composer require php-components/isocodes
-
-Then tell composer to download any new requirement
-
-    composer update
 
 ## Adapters
 Adapters are used in order to load the ISO data. Currently we support the following adapters:
@@ -52,7 +46,7 @@ This adapter makes use of [iso-codes](https://pkg-isocodes.alioth.debian.org/) J
     
     if (null !== $country) {
         // Get the country name in Spanish ('es')
-        echo $c->getName('es');
+        echo $country->getName('es');
     } else {
         echo 'Country not found!';
     }
@@ -76,7 +70,7 @@ This adapter makes use of PDO to retrieve the ISO data from a database backend. 
     
     if (null !== $country) {
         // Get the country name in Spanish ('es')
-        echo $c->getName('es');
+        echo $country->getName('es');
     } else {
         echo 'Country not found!';
     }
