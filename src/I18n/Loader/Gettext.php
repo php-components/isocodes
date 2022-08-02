@@ -144,7 +144,7 @@ class Gettext
         }
         
         // Read header entries
-        if (array_key_exists('', $textDomain)) {
+        if (property_exists($textDomain, '')) {
             //  We really don't need this for our needs
             //$rawHeaders = explode("\n", trim($textDomain['']));
             //
